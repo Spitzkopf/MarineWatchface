@@ -1,0 +1,34 @@
+{
+  "uuid": "8a8d3133-8eaa-4853-b685-7743ca770949",
+  "shortName": "DOOM Marine",
+  "longName": "DOOM Marine",
+  "companyName": "Spitzkopf",
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "targetPlatforms": ["aplite", "basalt"],
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": [
+      {
+      "type": "png-trans",
+      "name": "DOOM_MARINE_SPRITES",
+      "file": "images/marine_sub_large.png"
+      },
+      {
+      "type": "png-trans",
+      "name": "DOOM_MARINE_SPRITE_CHARGING",
+      "file": "images/charging.png"
+      },
+      {
+        "file": "fonts/BOKEH.ttf",
+        "name": "FONT_CUSTOM_24",
+        "type": "font"
+      }
+    ]
+  }
+}
