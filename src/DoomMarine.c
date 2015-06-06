@@ -8,7 +8,7 @@
 #define SPRITES_H 540
 
 #define SINGLE_SPRITE_W 77
-#define SINGLE_SPRITE_H 94
+#define SINGLE_SPRITE_H 100
 
 #define MAX_SPRITE_X ((int)floor(SPRITES_W / (double)SINGLE_SPRITE_W) - 1)
 #define MAX_SPRITE_Y ((int)floor(SPRITES_H / (double)SINGLE_SPRITE_H) - 1)
@@ -54,7 +54,7 @@ GBitmap* get_sprite_by_index(GBitmap* spritesheet, int x, int y) {
     return NULL;
   }
   
-  GRect sub_rect = GRect((SINGLE_SPRITE_W * x) + (9 * x), (SINGLE_SPRITE_H * y) + (15 * y) , SINGLE_SPRITE_W, SINGLE_SPRITE_H);
+  GRect sub_rect = GRect((SINGLE_SPRITE_W * x) + (9 * x), (SINGLE_SPRITE_H * y) + (7 * y) , SINGLE_SPRITE_W, SINGLE_SPRITE_H);
   GBitmap* sub_bitmap = gbitmap_create_as_sub_bitmap(spritesheet, sub_rect);
   
   return sub_bitmap;
