@@ -21,11 +21,10 @@ Layer* marine_layer;
 Layer* time_layer;
 Layer* date_layer;
 
-GBitmap* marine_spritesheet_black;
-GBitmap* marine_spritesheet_white;
+GBitmap* marine_spritesheet;
 
-GBitmap* marine_charging_black;
-GBitmap* marine_charging_white;
+GBitmap* marine_charging;
+
 GFont custom_font_24;
 
 AppTimer* marine_animation_timer;
@@ -54,7 +53,7 @@ GBitmap* get_sprite_by_index(GBitmap* spritesheet, int x, int y) {
     return NULL;
   }
   
-  GRect sub_rect = GRect((SINGLE_SPRITE_W * x) + (9 * x), (SINGLE_SPRITE_H * y) + (7 * y) , SINGLE_SPRITE_W, SINGLE_SPRITE_H);
+  GRect sub_rect = GRect(3 + (SINGLE_SPRITE_W * x) + (9 * x), 10 + (SINGLE_SPRITE_H * y) + (7 * y) , SINGLE_SPRITE_W, SINGLE_SPRITE_H);
   GBitmap* sub_bitmap = gbitmap_create_as_sub_bitmap(spritesheet, sub_rect);
   
   return sub_bitmap;
@@ -72,8 +71,7 @@ void draw_marine_layer(Layer *layer, GContext *ctx) {
   next_y = next_y > MAX_SPRITE_Y ? MAX_SPRITE_Y : next_y; 
   
   bool destroy_new_sprite = false;
-  GBitmap* new_sprite_black = NULL;
-  GBitmap* new_sprite_white = NULL;
+  GBitmap* new_sprite = NULL;
   
   if (!anim_data.current_battery_state.is_charging && !anim_data.current_battery_state.is_plugged) {
       switch (anim_data.current_x) {
@@ -105,43 +103,33 @@ void draw_marine_layer(Layer *layer, GContext *ctx) {
      anim_data.previous_x = anim_data.current_x;
      anim_data.current_x = next_x;
      
-     new_sprite_black  = get_sprite_by_index(marine_spritesheet_black, next_x, next_y);
-     new_sprite_white  = get_sprite_by_index(marine_spritesheet_black, next_x, next_y);
+     new_sprite  = get_sprite_by_index(marine_spritesheet, next_x, next_y);
      
-     if (!new_sprite_black || !new_sprite_white) {
-      APP_LOG(APP_LOG_LEVEL_ERROR, "Error getting new sprite! x:%d y:%d", next_x, next_y);
-      return;
-     } 
+     if (!new_sprite) {
+       APP_LOG(APP_LOG_LEVEL_ERROR, "Error getting new sprite! x:%d y:%d", next_x, next_y);
+       return;
+     }
      
      destroy_new_sprite = true; 
   } else {
-    new_sprite_black = marine_charging_black;
-    new_sprite_white = marine_charging_black;
+    new_sprite = marine_charging;
   }
    
-  
 #ifdef PBL_PLATFORM_BASALT
-   GRect image_size_black = gbitmap_get_bounds(new_sprite_black);
-   GRect image_size_white = gbitmap_get_bounds(new_sprite_white);
+   GRect image_size = gbitmap_get_bounds(new_sprite);
 #else 
-   GRect image_size_black = new_sprite_black->bounds;
-   GRect image_size_white = new_sprite_white->bounds;
+   GRect image_size = new_sprite->bounds;
 #endif  
   
   GRect bounds = layer_get_bounds(layer);
   
-  grect_align(&image_size_black, &bounds, GAlignCenter, true);
-  grect_align(&image_size_white, &bounds, GAlignCenter, true);
+  grect_align(&image_size, &bounds, GAlignCenter, true);
 
-  graphics_context_set_compositing_mode(ctx, GCompOpOr);
-  graphics_draw_bitmap_in_rect(ctx, new_sprite_white, image_size_white);
-  
-  graphics_context_set_compositing_mode(ctx, GCompOpClear);
-  graphics_draw_bitmap_in_rect(ctx, new_sprite_black, image_size_black);
+  graphics_context_set_compositing_mode(ctx, GCompOpAssign);
+  graphics_draw_bitmap_in_rect(ctx, new_sprite, image_size);
   
   if (destroy_new_sprite) {
-    gbitmap_destroy(new_sprite_black);
-    gbitmap_destroy(new_sprite_white);
+    gbitmap_destroy(new_sprite);
   }
 }
 
@@ -264,11 +252,9 @@ void time_changed_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 void main_window_load(Window *window) {
-  marine_spritesheet_black = gbitmap_create_with_resource(RESOURCE_ID_DOOM_MARINE_SPRITES_BLACK);
-  marine_spritesheet_white = gbitmap_create_with_resource(RESOURCE_ID_DOOM_MARINE_SPRITES_WHITE);
+  marine_spritesheet = gbitmap_create_with_resource(RESOURCE_ID_DOOM_MARINE_SPRITES);
   
-  marine_charging_black = gbitmap_create_with_resource(RESOURCE_ID_DOOM_MARINE_SPRITE_CHARGING_BLACK);
-  marine_charging_white = gbitmap_create_with_resource(RESOURCE_ID_DOOM_MARINE_SPRITE_CHARGING_WHITE);
+  marine_charging = gbitmap_create_with_resource(RESOURCE_ID_DOOM_MARINE_SPRITE_CHARGING);
   
   marine_layer = layer_create(GRect(0, 0, 144, 168));
   layer_set_update_proc(marine_layer, draw_marine_layer);
@@ -294,10 +280,8 @@ void main_window_load(Window *window) {
 }
 
 void main_window_unload(Window *window) {
-  gbitmap_destroy(marine_spritesheet_black);
-  gbitmap_destroy(marine_spritesheet_white);
-  gbitmap_destroy(marine_charging_black);
-  gbitmap_destroy(marine_charging_white);
+  gbitmap_destroy(marine_spritesheet);
+  gbitmap_destroy(marine_charging);
   
   layer_destroy(marine_layer);
   layer_destroy(time_layer);

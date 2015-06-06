@@ -15,12 +15,12 @@
   "resources": {
     "media": [
       {
-      "type": "png-trans",
+      "type": "png",
       "name": "DOOM_MARINE_SPRITES",
       "file": "images/marine_sub_large.png"
       },
       {
-      "type": "png-trans",
+      "type": "png",
       "name": "DOOM_MARINE_SPRITE_CHARGING",
       "file": "images/charging.png"
       },
